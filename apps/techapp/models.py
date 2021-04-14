@@ -15,8 +15,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=150)
-    mobile_number = models.CharField(blank=True , max_length=20)
-    email = models.EmailField(max_length=200)
+    mobile_number = models.CharField(blank=True, max_length=20)
     employee_team = models.CharField(max_length=100)
 
     def __str__(self):
@@ -26,8 +25,8 @@ class Employee(models.Model):
 class Request(models.Model):
     tech_item = models.ForeignKey(TechItem, on_delete=models.CASCADE)
     employee_name = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    start_date = models.DateTimeField(auto_now_add=True)
+    issue_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
 
     def __str__(self):
-        return self.tech_item.name
+        return self.tech_item

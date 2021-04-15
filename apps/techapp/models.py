@@ -22,7 +22,7 @@ class Employee(models.Model):
         return self.name
 
 
-class Request(models.Model):
+class AllottedItem(models.Model):
     tech_item = models.ForeignKey(TechItem, on_delete=models.CASCADE)
     employee_name = models.ForeignKey(Employee, on_delete=models.CASCADE)
     issue_date = models.DateTimeField(auto_now_add=True)

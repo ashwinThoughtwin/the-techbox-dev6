@@ -70,5 +70,5 @@ def logout_request(request):
     return redirect("/")
 
 
-def error(request):
+def handler404(request, exception=None):
     return render(request, '404.html')

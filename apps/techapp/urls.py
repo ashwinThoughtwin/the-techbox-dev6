@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import dashboard, error, Loginview, logout_request, item_upload, AddEmployee
+from .views import dashboard, Loginview, logout_request, item_upload, AddEmployee
 from apps.techapp import views
 
 urlpatterns = [
@@ -9,5 +9,5 @@ urlpatterns = [
     path('logout', logout_request, name='logout'),
     path('itemupload', item_upload, name='itemupload'),
     path('delete/<int:id>/', views.delete_item , name="deletedata"),
-    path('err/', error, name="error"),
+    # path('err/', error, name="error"),
 ]

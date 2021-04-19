@@ -10,6 +10,10 @@ class TechItem(models.Model):
     def __str__(self):
         return self.item_name
 
+    @property
+    def number_of_techitem(self):
+        return self.item_name.all().count()
+
 
 class Employee(models.Model):
     name = models.CharField(max_length=100)
@@ -23,10 +27,11 @@ class Employee(models.Model):
 
 
 class AllottedItem(models.Model):
-    tech_item = models.ForeignKey(TechItem, on_delete=models.CASCADE)
-    employee_name = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    issue_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField()
+    tech_item = models.ForeignKey(TechItem, on_delete=models.CASCADE, related_name='tech_items')
+    employee_name = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='employee_names')
+    issue_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
 
-    def __str__(self):
-        return self.tech_item
+    @property
+    def number_of_allotteditem(self):
+        return self.tech_item.all().count()

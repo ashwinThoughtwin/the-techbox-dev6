@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div id="wrapper">
+
+        <!-- Sidebar -->
+        {% include "sidebar.html" %}
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                {% include "header.html" %}
+                <!-- End of Topbar -->
+
+                <div class="container-fluid">
+                <form action="{% url 'add-employee' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="modal-body">
+                           {{ form.as_p }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" value="Submit" class="btn btn-success">Add Employee</button>
+                        </div>
+
+                    </form>
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Employee Table</h1>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Employees</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Address</th>
+                                            <th>Mobile Number</th>
+                                            <th>Team</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                    {% for employee in employee %}
+                                        <tr>
+                                            <th>{{ employee.id }}</th>
+                                            <th>{{ employee.name }}</th>
+                                            <th>{{ employee.email }}</th>
+                                            <th>{{ employee.address }}</th>
+                                            <th>{{ employee.mobile_number }}</th>
+                                            <th>{{ employee.employee_team }}</th>
+
+                                            {% endfor %}
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+
+            </div>
+
+        </div>
+</div>
+{% endblock %}

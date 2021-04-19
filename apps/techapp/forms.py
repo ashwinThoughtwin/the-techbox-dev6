@@ -1,5 +1,7 @@
 from django import forms
-from .models import TechItem, Employee
+from django.forms import DateInput
+
+from .models import TechItem, Employee, AllottedItem
 
 
 class TechItemUpload(forms.ModelForm):
@@ -12,3 +14,17 @@ class AddEmp(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ('name', 'email', 'address', 'mobile_number', 'employee_team')
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
+class AllotItems(forms.ModelForm):
+    issue_date = forms.DateField(widget=DateInput())
+    end_date = forms.DateField(widget=DateInput())
+
+    class Meta:
+        model = AllottedItem
+        fields = ('tech_item', 'employee_name', 'issue_date', 'end_date')
+

@@ -1,71 +1,42 @@
-{% extends "base.html" %}
 {% load static %}
 
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="{% static 'css/login.css' %}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="container">
+                <h1>TheTechBox</h1>
+                <form method="POST"  >
+                    {% csrf_token %}
+                        <input type="text" placeholder="Username" name="username">
+                        <input type="password" placeholder="Password" name="password">
+                        <button type="submit" id="login-button">Login</button>
+                        {% for message in messages %}
 
-{% block content %}
+                          <div  role="alert">
+                              {{ message }}
+                          </div>
 
-<body class="bg-gradient-primary">
-
-    <div class="container">
-
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-
-            <div class="col-xl-10 col-lg-12 col-md-9">
-
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                            <div class="col-lg-6">
-                                    <div class="p-5">
-                                        <div class="text-center">
-                                            <h1 class="h4 text-gray-900 mb-4">TheTechBox Login</h1>
-                                        </div>
-                                        <form method="POST"  >
-                                            {% csrf_token %}
-                                            <div class="form-group">
-                                                <input type="username" class="form-control form-control-user"
-                                                       name="username"
-                                                    placeholder="Enter username">
-                                            </div>
-                                            <div class="form-group">
-                                                <input type="password" name="password"
-                                                       class="form-control form-control-user"
-                                                    id="exampleInputPassword" placeholder="Password">
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="custom-control custom-checkbox small">
-                                                    <input type="checkbox" class="custom-control-input" id="customCheck">
-                                                    <label class="custom-control-label" for="customCheck">Remember
-                                                        Me</label>
-                                                </div>
-                                            </div>
-                                            <button class="btn btn-primary" type="submit">Login</button>
-
-                                        </form>
-
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                        {% endfor %}
+                </form>
             </div>
 
+            <ul class="bg-bubbles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
         </div>
-
-    </div>
-    <div id="rightbod">
-          {% for message in messages %}
-
-              <div class="alert alert-danger" role="alert">
-
-                     {{ message }}
-
-              </div>
-          {% endfor %}
-</body>
-
-{% endblock %}
+    <script src="{% static 'js/login.js' %}"></script>
+    </body>
+</html>

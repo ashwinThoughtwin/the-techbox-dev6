@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block content %}
-<div id="wrapper">
+
+    <div id="wrapper">
 
         <!-- Sidebar -->
         {% include "sidebar.html" %}
@@ -18,18 +19,46 @@
                 {% include "header.html" %}
                 <!-- End of Topbar -->
 
+
                 <div class="container-fluid">
-                <form action="{% url 'add-employee' %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                        Add Employee
+                    </button>
+                    <br>
+                    <br>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    {#                                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>#}
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="modal-body">
+                                            <h1 class="h3 mb-2 text-gray-800">Add Employee</h1>
+                                            <hr>
+                                            {{ form.as_p }}
+                                            {#                                                <button type="button" value="Submit" id="btnsave" class="btn btn-success">Add Employee</button>#}
+                                        </div>
+                                        <div class="modal-footer">
 
-                        <div class="modal-body">
-                           {{ form.as_p }}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" value="Submit" class="btn btn-success">Add Employee</button>
-                        </div>
+                                        </div>
 
-                    </form>
+                                    </form>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" id="btnsave" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Employee Table</h1>
@@ -41,33 +70,55 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Address</th>
-                                            <th>Mobile Number</th>
-                                            <th>Team</th>
+                                <table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead >
+                                    <tr style="background-color: #1c294e;color: #e5ebfa">
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Mobile Number</th>
+                                        <th>Team</th>
+                                        <th>Update</th>
+                                        <th>Remove</th>
 
-                                        </tr>
+                                    </tr>
                                     </thead>
                                     <tfoot>
+                                    <tr style="background-color: #1c294e;color: #e5ebfa">
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Mobile Number</th>
+                                        <th>Team</th>
+                                        <th>Update</th>
+                                        <th>Remove</th>
+
+                                    </tr>
+                                    </tfoot>
+                                    <tbody class="newrow">
                                     {% for employee in employee %}
-                                        <tr>
+                                        <tr class="table">
                                             <th>{{ employee.id }}</th>
                                             <th>{{ employee.name }}</th>
                                             <th>{{ employee.email }}</th>
                                             <th>{{ employee.address }}</th>
-                                            <th>{{ employee.mobile_number }}</th>
-                                            <th>{{ employee.employee_team }}</th>
-
-                                            {% endfor %}
+                                            <th>{{ employee.mobile }}</th>
+                                            <th>{{ employee.team }}</th>
+                                            <th>
+                                                <a href="{% url 'updateemployee' employee.id %}"
+                                                   class="btn btn-warning btn-sm">Update</a>
+                                                {#                                                                    <a class="btn btn-success btn-sm" data-id="{{ employee.id }}" data-toggle="modal" data-target="#editModal">Update</a>#}
+                                            </th>
+                                            <th>
+                                                <div>
+                                                    <input type="submit" data-id="{{ employee.id }}" id="del-btn"
+                                                           class="btn btn-danger btn-sm" value="delete">
+                                                </div>
+                                            </th>
                                         </tr>
-                                    </tfoot>
-                                    <tbody>
-
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -77,9 +128,92 @@
                 </div>
                 <!-- /.container-fluid -->
 
-
             </div>
 
         </div>
-</div>
+    </div>
+    {% block js %}
+        <script src="//cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#myTable').DataTable();
+            });
+        </script>
+        <script>
+            $(document).on('click', '#del-btn', function (e) { //BUTTON ID
+                {#var del_id = $('#del-id').val(); //INPUT FIELD#}
+                var object = $(this)
+                var del_id = $(this).data('id')
+                var my_data = {
+                    "del_id": del_id,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "employee-delete" %}',
+                    data: my_data,
+                    success: function (json) {
+                        $(object).closest('tr').remove()
+                        alert("Employee deleted");
+                    },
+                });
+            });
+        </script>
+        {#        <script>#}
+        {#            $("#btnsave").click(function(){#}
+        {##}
+        {#                var nm = $("#nameid").val();#}
+        {#                var em = $("#emailid").val();#}
+        {#                var ad = $("#addressid").val();#}
+        {#                var mob = $("#mobileid").val();#}
+        {#                var tem = $("#teamid").val();#}
+        {#var csr = $("input[name=csrfmiddlewaretoken]").val();#}
+        {#                var mydata = {name: nm, email: em, address: ad, mobile: mob, team: tem,#}
+        {#                            csrfmiddlewaretoken:"{{ csrf_token }}"}#}
+        {#                $.ajax({#}
+        {#                    url: "{% url 'add-employee' %}",#}
+        {#                    method: "POST",#}
+        {#                    data: mydata,#}
+        {#                    success: function (data) {#}
+        {#                        alert(data)#}
+        {#                        console.log(data)#}
+        {#                    }#}
+        {#                })#}
+        {##}
+        {#            });#}
+        {##}
+        {##}
+        {#        </script>#}
+        <script>
+            $(document).ready(function () {
+                $(document).on('click', '#btnsave', function (e) {
+                    e.preventDefault();
+                    var nm = $('#nameid').val();
+                    var em = $('#emailid').val();
+                    var ad = $('#addressid').val();
+                    var mob = $('#mobileid').val();
+                    var tem = $('#teamid').val();
+                    var my_data = {
+                        'name': nm, 'email': em, 'address': ad, 'mobile': mob, 'team': tem,
+                        'csrfmiddlewaretoken': "{{ csrf_token }}",
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'add-employee' %}",
+                        data: my_data,
+                        success: function (data) {
+                            $('.newrow').prepend(data);
+                            $('#exampleModalCenter').modal('hide');
+                            alert("Employee added")
+                        },
+                    });
+                });
+            });
+        </script>
+
+
+
+    {% endblock js %}
+
+
 {% endblock %}

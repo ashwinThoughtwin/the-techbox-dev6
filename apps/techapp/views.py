@@ -1,3 +1,6 @@
+from django.conf import settings
+import datetime
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -5,11 +8,15 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
 from .models import TechItem, Employee, AllottedItem
-from .forms import TechItemUpload, AddEmp, AllotItems
+from .forms import TechItemUpload, AddEmp, AllotItems, UpdateEmp
 from django.utils.decorators import method_decorator
+from django.core.mail import send_mail
+from .tasks import send_email_task, send_remember_task
+from django.views.decorators.cache import cache_page
 
 
 # Create your views here.
+# @cache_page(30)
 class DashBoardView(View):
 
     @method_decorator(login_required(login_url="login"))
@@ -19,12 +26,14 @@ class DashBoardView(View):
         item = TechItem.objects.all()
         item_count = TechItem.objects.all().count()
         employee_count = Employee.objects.all().count()
+        issued_tool = AllottedItem.objects.all().count()
         context = {
             'items': item,
             'form': fm,
             'form2': fm2,
             'item_count': item_count,
             'employee_count': employee_count,
+            'issued_tool': issued_tool,
         }
         return render(request, 'index.html', context)
 
@@ -47,7 +56,12 @@ class Loginview(View):
             return redirect('login')
 
     def get(self, request):
-        return render(request, 'login.html')
+
+        if request.user.is_authenticated:
+            return redirect('dashboard')
+
+        else:
+            return render(request, 'login.html')
 
 
 class ItemUpload(View):
@@ -59,31 +73,86 @@ class ItemUpload(View):
             post = fm.save()
             post.user = request.user
             post.save()
-            return redirect('dashboard')
+            return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
     @method_decorator(login_required(login_url="login"))
     def get(self, request):
         fm1 = TechItemUpload()
-        context = {'form': fm1}
+        item = TechItem.objects.all()
+        context = {'form': fm1, 'item': item}
         return render(request, 'additem.html', context)
 
 
-class AddEmployee(FormView):
-    form_class = AddEmp
-    success_url = 'employee'
+# class AddEmployee(FormView):
+#     form_class = AddEmp
+#     success_url = 'employee'
+#
+#     def form_valid(self, form):
+#         form.save()
+#         return super().form_valid(form)
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+def add_employee(request):
+    if request.method == "POST":
+        print(request.POST)
+        form = AddEmp(request.POST)
+        print(form)
+        if form.is_valid():
+            name = request.POST['name']
+            email = request.POST['email']
+            address = request.POST['address']
+            mobile = request.POST['mobile']
+            team = request.POST['team']
+            emp = Employee.objects.create(name=name, email=email, address=address,
+                                          mobile=mobile, team=team)
+
+            emp.save()
+            data = {
+                'employee': emp
+            }
+            return render(request, 'newemployee.html', data)
+        else:
+            return JsonResponse({'status': 0})
+
+
+class UpdateEmployee(View):
+
+    @method_decorator(login_required(login_url="login"))
+    def get(self, request, id):
+        try:
+            model_data = Employee.objects.get(pk=id)
+            fm = UpdateEmp(instance=model_data)
+            return render(request, 'updateemployee.html', {'form': fm})
+
+        except Employee.DoesNotExist:
+            return render(request, '404.html')
+
+    def post(self, request, id):
+        model_data = Employee.objects.get(pk=id)
+        fm = UpdateEmp(request.POST, instance=model_data)
+        if fm.is_valid:
+            fm.save()
+            return redirect('employee_table')
+
+
+# class UpdateEmployee(View):
+#
+#     def post(self, request, id):
+#         model_data = Employee.objects.get(pk=id)
+#         fm = UpdateEmp(request.POST, instance=model_data)
+#         if fm.is_valid:
+#             fm.save()
+#             return redirect('employee_table')
 
 
 class EmployeeTable(View):
 
     @method_decorator(login_required(login_url="login"))
-    def get(self, request):
+    def get(self, request, ):
         employee = Employee.objects.all()
-        fm2 = AddEmp()
-        context = {'employee': employee, 'form': fm2}
+        fm2 = AddEmp
+
+        form2 = UpdateEmp()
+        context = {'employee': employee, 'form': fm2, 'form2': form2}
         return render(request, 'employee.html', context)
 
 
@@ -92,9 +161,48 @@ class AllotItem(View):
     def post(self, request):
         form = AllotItems(request.POST)
         if form.is_valid():
-            post = form.save()
-            post.user = request.user
-            post.save()
+            techitem = form.cleaned_data['tech_item']
+            issuedate = form.cleaned_data['issue_date']
+            enddate = form.cleaned_data['end_date']
+            # import pdb;
+            # pdb.set_trace()
+            form.save()
+            emp = Employee.objects.get(id=request.POST.get('employee_name'))
+            email = emp.email
+            print(email)
+
+            scheduled_date = AllottedItem.objects.latest('nowdate')
+            a = scheduled_date.issue_date
+            b = scheduled_date.end_date
+            c = (b - a).total_seconds()
+            print(c)
+
+            subject = f'Confirmation Email from TheTechBox '
+            message = f'Hello {emp.name}, We have allotted "{techitem}" to you , Please collect your Techitem ' \
+                      f'on the Date "{issuedate}" . ' \
+                      f'The end date of your Techitem is "{enddate}"\n \n' \
+                      f'Thankyou,\n' \
+                      f'TheTechBox'
+            # received_from = settings.EMAIL_HOST_USER
+            # recipient = [emp.email, ]
+            # send_mail(
+            #     subject,
+            #     message,
+            #     received_from,
+            #     recipient,
+            # )
+
+            subject_remember = f'Remembring Email from TheTechBox '
+            message_remember = f'Hello {emp.name},' \
+                               f' Your time for submitting "{techitem}" is end on "{enddate}" ' \
+                               f' Please submit your techitem on time.\n \n ' \
+                               f'Thankyou,\n' \
+                               f'TheTechBox'
+
+            send_email_task.delay(subject, message, email)
+            # send_email_task.apply_async((subject, message, email), countdown=0)
+
+            send_remember_task.apply_async((subject_remember, message_remember, email), countdown=c)
             return redirect('allot-items')
 
     @method_decorator(login_required(login_url="login"))
@@ -105,12 +213,40 @@ class AllotItem(View):
         return render(request, 'allotitem.html', context)
 
 
-def delete_item(request, id):
-    if request.method == 'POST':
-        model_data = TechItem.objects.get(pk=id)
-        model_data.delete()
+class AllottedItemsDelete(View):
 
-    return redirect('dashboard')
+    def post(self, request):
+        allot_id = request.POST.get('del_id')
+        tool = AllottedItem.objects.get(pk=allot_id)
+        tool.delete()
+        return redirect('allot-items')
+
+
+class DeleteEmployee(View):
+
+    def post(self, request):
+        emp_id = request.POST.get('del_id')
+        model_data = Employee.objects.get(pk=emp_id)
+        model_data.delete()
+        return redirect('employee_table')
+
+
+class DeleteItem(View):
+
+    def post(self, request):
+        item_id = request.POST.get('del_id')
+        model_data = TechItem.objects.get(pk=item_id)
+        model_data.delete()
+        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+
+
+# @login_required()
+# def delete_item(request, id):
+#     if request.method == 'POST':
+#         model_data = TechItem.objects.get(pk=id)
+#         model_data.delete()
+#
+#     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 
 def logout_request(request):

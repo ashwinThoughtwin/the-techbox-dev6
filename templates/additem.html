@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div id="wrapper">
+    <div id="wrapper">
 
         <!-- Sidebar -->
         {% include "sidebar.html" %}
@@ -17,21 +17,103 @@
                 <!-- Topbar -->
                 {% include "header.html" %}
                 <!-- End of Topbar -->
-                <h1 class="h3 mb-2 text-gray-800">Add Items</h1>
+
                 <div class="container-fluid">
-                <form action="{% url 'itemupload' %}" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'itemupload' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <div class="modal-body">
-                           {{ form.as_p }}
-                        </div>
-                        <div class="modal-footer">
+                            <h1 class="h3 mb-2 text-gray-800">Add Items</h1>
+                            <hr>
+                            {{ form.as_p }}
                             <button type="submit" value="Submit" class="btn btn-success">Add Items</button>
                         </div>
-
+                        <div class="container">
+                        </div>
                     </form>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">All TechItems</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                    <tr style="background-color: #1c294e;color: #e5ebfa">
+                                        <th>Id</th>
+                                        <th>Item Name</th>
+                                        <th>Item Image</th>
+                                        <th>Item Description</th>
+                                        <th>Remove</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr style="background-color: #1c294e;color: #e5ebfa">
+                                        <th>Id</th>
+                                        <th>Item Name</th>
+                                        <th>Item Image</th>
+                                        <th>Item Description</th>
+                                        <th>Remove</th>
+
+                                    </tr>
+                                    </tfoot>
+                                    <tbody class="newrow">
+                                    {% for item in item %}
+                                        <tr>
+                                            <th>{{ item.id }}</th>
+                                            <th>{{ item.item_name }}</th>
+                                            <th>{{ item.item_image }}</th>
+                                            <th>{{ item.item_description }}</th>
+                                            <th>
+                                                <div>
+                                                    <input type="submit" data-id="{{ item.id }}" id="del-btn"
+                                                           class="btn btn-danger btn-sm" value="delete">
+                                                </div>
+                                            </th>
+                                        </tr>
+
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-</div>
+    </div>
+    {% block js %}
+        <script src="//cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#myTable').DataTable();
+            });
+        </script>
+        <script>
+            $(document).on('click', '#del-btn', function (e) { //BUTTON ID
+                {#var del_id = $('#del-id').val(); //INPUT FIELD#}
+                var object = $(this)
+                var del_id = $(this).data('id')
+                var my_data = {
+                    "del_id": del_id,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "deletedata" %}',
+                    data: my_data,
+                    success: function (json) {
+                        $(object).closest('tr').remove()
+                        alert("Item Deleted");
+                    },
+                });
+            });
+        </script>
+
+
+    {% endblock js %}
+
 {% endblock %}

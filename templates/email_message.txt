@@ -1,0 +1,6 @@
+Hello {{employee_name|safe}}
+Your time for submitting {{tech_item|safe}} is end on {{end_date|safe}}
+Please submit your techitem on time.
+
+
+Thank you!

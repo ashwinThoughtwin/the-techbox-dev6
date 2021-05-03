@@ -1,0 +1,83 @@
+[
+{
+    "model": "techapp.techitem",
+    "pk": 47,
+    "fields": {
+        "item_name": "Keybord",
+        "item_image": "None/key_4qQi93V.png",
+        "item_description": "This is keyboard"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 48,
+    "fields": {
+        "item_name": "Webcam",
+        "item_image": "None/webcam.png",
+        "item_description": "This is Webcam"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 49,
+    "fields": {
+        "item_name": "HeadPhone",
+        "item_image": "None/headphone.jpg",
+        "item_description": "This is Headphone"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 50,
+    "fields": {
+        "item_name": "Pendrive",
+        "item_image": "None/pendrive.jpeg",
+        "item_description": "This is pendrive"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 51,
+    "fields": {
+        "item_name": "Pendrive",
+        "item_image": "None/pendrive_ospfgya.jpeg",
+        "item_description": "This is gaming Pendrive"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 52,
+    "fields": {
+        "item_name": "Pendrive",
+        "item_image": "None/pendrive_wyHOe0N.jpeg",
+        "item_description": "This is pendrive"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 53,
+    "fields": {
+        "item_name": "Speaker",
+        "item_image": "None/black1-1_z0or0ki.png",
+        "item_description": "This is speaker"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 54,
+    "fields": {
+        "item_name": "Speaker",
+        "item_image": "None/137-1373313_computer-mouse-hd-png-download_5dML3eL.png",
+        "item_description": "This is speaker"
+    }
+},
+{
+    "model": "techapp.techitem",
+    "pk": 55,
+    "fields": {
+        "item_name": "Speaker",
+        "item_image": "None/black1-1_sRfXZ6a.png",
+        "item_description": "This is speaker"
+    }
+}
+]

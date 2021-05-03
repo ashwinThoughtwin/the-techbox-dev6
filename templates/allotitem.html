@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
-<div id="wrapper">
+    <div id="wrapper">
 
         <!-- Sidebar -->
         {% include "sidebar.html" %}
@@ -18,14 +19,49 @@
                 {% include "header.html" %}
                 <!-- End of Topbar -->
 
+
                 <div class="container-fluid">
-                <form action="{% url 'allot-items' %}" method="post" enctype="multipart/form-data">
+                    <form action="{% url 'allot-items' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <div class="modal-body">
-                           {{ forms.as_p }}
-                        </div>
-                        <div class="modal-footer">
+                            <h1 class="h3 mb-2 text-gray-800">Allot Items</h1>
+                            <hr>
+
+                            <div class="field">
+                                <label class="label">Select TechItem</label>
+                                <div class="control">
+                                    {% render_field forms.tech_item %}
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Select Employee</label>
+                                <div class="control">
+                                    {% render_field forms.employee_name %}
+                                </div>
+                            </div>
+{#                             <div class="field">#}
+{#                                <label class="label">Employee Email</label>#}
+{#                                <div class="control">#}
+{#                                    {% render_field forms.email %}#}
+{#                                </div>#}
+{#                            </div>#}
+
+                            <div class="field">
+                                <label class="label">Issue Date</label>
+                                <div class="control">
+                                    {% render_field forms.issue_date %}
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">End Date</label>
+                                <div class="control">
+                                    {% render_field forms.end_date %}
+                                </div>
+                            </div>
+                            <br>
                             <button type="submit" value="Submit" class="btn btn-success">Allot</button>
                         </div>
 
@@ -43,29 +79,45 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
-                                        <tr>
+                                        <tr style="background-color: #1c294e;color: #e5ebfa">
                                             <th>Id</th>
                                             <th>Tech Item</th>
                                             <th>Employee Name</th>
                                             <th>Issue Date</th>
                                             <th>End Date</th>
+                                            <th>Remove</th>
 
                                         </tr>
                                     </thead>
                                     <tfoot>
-                                    {% for item in item %}
-                                        <tr>
+                                       <tr style="background-color: #1c294e;color: #e5ebfa">
+                                            <th>Id</th>
+                                            <th>Tech Item</th>
+                                            <th>Employee Name</th>
+                                            <th>Issue Date</th>
+                                            <th>End Date</th>
+                                            <th>Remove</th>
+
+                                        </tr>
+                                    </tfoot>
+                                    <tbody class="newrow">
+                                        {% for item in item %}
+                                        <tr class="table">
+
                                             <th>{{ item.id }}</th>
                                             <th>{{ item.tech_item }}</th>
                                             <th>{{ item.employee_name }}</th>
                                             <th>{{ item.issue_date }}</th>
                                             <th>{{ item.end_date }}</th>
-                                    {% endfor %}
+                                            <th>
+                                                <div>
 
+                                                    <input type="submit" data-id="{{ item.id }}" id="del-btn"
+                                                           class="btn btn-danger btn-sm" value="delete">
+                                                </div>
+                                            </th>
                                         </tr>
-                                    </tfoot>
-                                    <tbody>
-
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -79,5 +131,51 @@
             </div>
 
         </div>
-</div>
+    </div>
+
+    {% block js %}
+        <script src="//cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#myTable').DataTable();
+            });
+        </script>
+        <script>
+            $(document).on('click', '#del-btn', function (e) { //BUTTON ID
+                {#var del_id = $('#del-id').val(); //INPUT FIELD#}
+                var object = $(this)
+                var del_id = $(this).data('id')
+                var my_data = {
+                    "del_id": del_id,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "allot-delete" %}',
+                    data: my_data,
+                    success: function (json) {
+                        $(object).closest('tr').remove()
+                        alert("Allotted Item Deleted");
+                    },
+                });
+            });
+        </script>
+
+        <script>
+
+            function upload_img(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#img_id').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
+
+
+    {% endblock js %}
 {% endblock %}

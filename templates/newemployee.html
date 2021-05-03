@@ -1,0 +1,18 @@
+<tr class="table">
+
+    <th>{{ employee.id }}</th>
+    <th>{{ employee.name }}</th>
+    <th>{{ employee.email }}</th>
+    <th>{{ employee.address }}</th>
+    <th>{{ employee.mobile }}</th>
+    <th>{{ employee.team }}</th>
+    <th>
+        <a href="{% url 'updateemployee' employee.id %}" class="btn btn-warning btn-sm">Update</a>
+        {#                                                                    <a class="btn btn-success btn-sm" data-id="{{ employee.id }}" data-toggle="modal" data-target="#editModal">Update</a>#}
+    </th>
+    <th>
+        <div>
+            <input type="submit" data-id="{{ employee.id }}" id="del-btn" class="btn btn-danger btn-sm" value="delete">
+        </div>
+    </th>
+</tr>

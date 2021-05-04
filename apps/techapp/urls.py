@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import logout_request, add_employee
+from .views import logout_request
 from apps.techapp import views
 from apps.techapp.api import AssignItemApi, TechitemList, TechItemDetail, EmployeeCreate
 
@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('', views.Loginview.as_view(), name='login'),
     path('dashboard', views.DashBoardView.as_view(), name='dashboard'),
-    path('add-employee', add_employee, name='add-employee'),
+    path('add-employee', views.AddEmployee.as_view(), name='add-employee'),
     path('employee/', views.EmployeeTable.as_view(), name='employee_table'),
     path('logout', logout_request, name='logout'),
     path('itemupload', views.ItemUpload.as_view(), name='itemupload'),
@@ -17,6 +17,10 @@ urlpatterns = [
     path('delete/', views.DeleteItem.as_view(), name="deletedata"),
     path('employee-delete/', views.DeleteEmployee.as_view(), name="employee-delete"),
     path('updateemployee/<int:id>/', views.UpdateEmployee.as_view(), name='updateemployee'),
+    path('charge/', views.Charge.as_view(), name='charge'),
+    path('success/<str:args>/', views.Success.as_view(), name='success'),
+    path('donation/', views.DonationPage.as_view(), name='donation'),
+
 
     # Api's
     path('api-auth/', include('rest_framework.urls')),

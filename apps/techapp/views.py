@@ -5,14 +5,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.views.generic.base import View
 from django.views.generic.edit import FormView
+
+from the_tech_box.settings import STRIPE_PRIVATE_KEY
 from .models import TechItem, Employee, AllottedItem
 from .forms import TechItemUpload, AddEmp, AllotItems, UpdateEmp
 from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
 from .tasks import send_email_task, send_remember_task
 from django.views.decorators.cache import cache_page
+import stripe
+
+stripe.api_key = 'sk_test_51InHHySHe26ILC3WN3MX4uoOYN9fu51hxV1oX9bHcag4D888kFxhKNcPt7eVHLMyhsKm0Od9VUEGgrpAhbMku0u500S56eI9nY'
 
 
 # Create your views here.
@@ -90,9 +96,9 @@ class ItemUpload(View):
 #     def form_valid(self, form):
 #         form.save()
 #         return super().form_valid(form)
+class AddEmployee(View):
 
-def add_employee(request):
-    if request.method == "POST":
+    def post(self, request):
         print(request.POST)
         form = AddEmp(request.POST)
         print(form)
@@ -183,14 +189,6 @@ class AllotItem(View):
                       f'The end date of your Techitem is "{enddate}"\n \n' \
                       f'Thankyou,\n' \
                       f'TheTechBox'
-            # received_from = settings.EMAIL_HOST_USER
-            # recipient = [emp.email, ]
-            # send_mail(
-            #     subject,
-            #     message,
-            #     received_from,
-            #     recipient,
-            # )
 
             subject_remember = f'Remembring Email from TheTechBox '
             message_remember = f'Hello {emp.name},' \
@@ -240,13 +238,37 @@ class DeleteItem(View):
         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 
-# @login_required()
-# def delete_item(request, id):
-#     if request.method == 'POST':
-#         model_data = TechItem.objects.get(pk=id)
-#         model_data.delete()
-#
-#     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+class DonationPage(View):
+
+    def get(self, request):
+        return render(request, 'donation.html')
+
+
+class Charge(View):
+
+    def post(self, request):
+        amount = int(request.POST['amount'])
+        print('data:', request.POST)
+        customer = stripe.Customer.create(
+                email=request.POST['email'],
+                name=request.POST['name'],
+                source=request.POST['stripeToken'],
+            )
+        charge = stripe.Charge.create(
+            customer=customer,
+            amount=amount*100,
+            currency='inr',
+            description="Donation"
+        )
+
+        return redirect(reverse('success', args=[amount]))
+
+
+class Success(View):
+
+    def get(self, request, args):
+        amount = args
+        return render(request, 'success.html', {'amount': amount})
 
 
 def logout_request(request):

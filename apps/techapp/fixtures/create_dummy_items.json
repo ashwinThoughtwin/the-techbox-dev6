@@ -1,0 +1,9 @@
+[{
+    "model": "techapp.techitem",
+    "pk": 100,
+    "fields": {
+        "item_name": "Keybord fixtures",
+        "item_image": "None/key_4qQi93V.png",
+        "item_description": "This is keyboard fixtures"
+    }
+}]

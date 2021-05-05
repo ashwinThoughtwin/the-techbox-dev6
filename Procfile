@@ -1,1 +1,1 @@
-web: gunicorn the_tech_box.wsgi --log-file - 
+web: gunicorn the_tech_box.wsgi

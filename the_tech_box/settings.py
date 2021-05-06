@@ -178,8 +178,8 @@ EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'rishirajsingh.thoughtwin@gmail.com'
-EMAIL_HOST_PASSWORD = 'vumxpzgnnmwsiorx'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 
 CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_TASK_TRACK_STARTED = True

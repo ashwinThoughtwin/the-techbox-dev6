@@ -179,7 +179,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'rishirajsingh.thoughtwin@gmail.com'
-EMAIL_HOST_PASSWORD = 'rishiraj12345'
+EMAIL_HOST_PASSWORD = 'vumxpzgnnmwsiorx'
 
 CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_TASK_TRACK_STARTED = True
@@ -194,5 +194,3 @@ STRIPE_PRIVATE_KEY = 'sk_test_51InHHySHe26ILC3WN3MX4uoOYN9fu51hxV1oX9bHcag4D888k
 
 # CELERY_TASK_SERIALIZER = 'json'
 
-CELERY_BROKER_URL= 'pyamqp://rabbitmq:5672'
-CELERY_RESULT_BACKEND = 'django-db'

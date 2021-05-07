@@ -25,7 +25,7 @@ stripe.api_key = 'sk_test_51InHHySHe26ILC3WN3MX4uoOYN9fu51hxV1oX9bHcag4D888kFxhK
 
 class DashBoardView(View):
 
-    @method_decorator(cache_page(60 * 30))
+    # @method_decorator(cache_page(60 * 30))
     @method_decorator(login_required(login_url="login"))
     def get(self, request):
         fm = TechItemUpload()

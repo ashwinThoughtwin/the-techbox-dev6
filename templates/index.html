@@ -198,38 +198,29 @@
                                 <div class="card shadow mb-4">
 
                                     <!-- Card Header - Dropdown -->
-                                    {#                                    <div#}
-                                    {#                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">#}
-                                    {#                                        <h6 class="m-0 font-weight-bold text-primary">{{ item.item_name }}</h6>#}
-                                    {#                                        <div class="dropdown no-arrow">#}
-                                    {#                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"#}
-                                    {#                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">#}
-                                    {#                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>#}
-                                    {#                                            </a>#}
-                                    {#                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"#}
-                                    {#                                                 aria-labelledby="dropdownMenuLink">#}
-                                    {#                                                <div>#}
-                                    {#                                                    <input type="submit" data-id="{{ item.id }}" id="del-btn"#}
-                                    {#                                                           class="btn btn-danger btn-sm" value="delete">#}
-                                    {#                                                </div>#}
-                                    {##}
-                                    {#                                            </div>#}
-                                    {#                                        </div>#}
-                                    {#                                    </div>#}
+
                                     <!-- Card Body -->
                                     <div class="card-body">
-                                        <div class="chart-area">
+
                                             {#                                        <canvas id="myAreaChart"></canvas>#}
-                                            <center><h6
-                                                    class="m-0 font-weight-bold text-primary">{{ item.item_name }}</h6>
+                                            <center>
+                                                <span>
+                                                    <h6 class="m-0 font-weight-bold text-primary">{{ item.item_name }}</h6>
+                                                </span>
                                             </center>
                                             <hr>
-                                            <center><img src="{{ item.item_image.url }}" height="200"></center>
+                                            <center>
+                                                <picture>
+                                                      <source srcset="{{ item.item_image.url }}" type="image/svg+xml">
+                                                      <img src="{{ item.item_image.url }}" class="img-fluid img-thumbnail" alt="...">
+                                                    </picture>
+{#                                                <div >#}
+{#                                                    <img src="{{ item.item_image.url }}" >#}
+{#                                                </div>#}
+                                            </center>
                                             <hr>
                                             <h6>Description</h6>
                                             <h4>{{ item.item_description }}</h4>
-
-                                        </div>
                                     </div>
                                 </div>
                             </div>
